@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <com.journeyapps.barcodescanner.BarcodeView
+            android:id="@+id/barcodeView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <View
+            android:id="@+id/laserView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/code_scanner_laser_height"
+            android:background="@color/code_scanner_laser_color"/>
+
+    <com.github.herokotlin.code.ViewFinder
+            android:id="@+id/viewFinder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:view_finder_border_width="@dimen/code_scanner_view_finder_border_width"
+            app:view_finder_border_color="@color/code_scanner_view_finder_border_color"
+            app:view_finder_mask_color="@color/code_scanner_view_finder_mask_color"
+            app:view_finder_corner_color="@color/code_scanner_view_finder_corner_color"
+            app:view_finder_corner_size="@dimen/code_scanner_view_finder_corner_size"
+            app:view_finder_corner_width="@dimen/code_scanner_view_finder_corner_width"/>
+
+    <TextView
+            android:id="@+id/guideView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/code_scanner_guide_title"
+            android:textSize="@dimen/code_scanner_guide_text_size"
+            android:textColor="@color/code_scanner_guide_text_color"/>
+
+    <ImageView
+            android:id="@+id/torchButton"
+            android:layout_width="@dimen/code_scanner_torch_button_width"
+            android:layout_height="@dimen/code_scanner_torch_button_height"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/code_scanner_torch_on"/>
+
+</RelativeLayout>

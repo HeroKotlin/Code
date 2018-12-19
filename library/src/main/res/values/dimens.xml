@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="code_scanner_view_finder_border_width">1px</dimen>
+    <dimen name="code_scanner_view_finder_corner_width">2dp</dimen>
+    <dimen name="code_scanner_view_finder_corner_size">16dp</dimen>
+    <dimen name="code_scanner_laser_height">1dp</dimen>
+    <dimen name="code_scanner_laser_gap">10dp</dimen>
+    <dimen name="code_scanner_guide_text_size">13sp</dimen>
+    <dimen name="code_scanner_guide_margin_top">10dp</dimen>
+    <dimen name="code_scanner_torch_button_width">44dp</dimen>
+    <dimen name="code_scanner_torch_button_height">44dp</dimen>
+    <dimen name="code_scanner_torch_button_margin_bottom">0dp</dimen>
+</resources>
