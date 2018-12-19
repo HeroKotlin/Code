@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 
-class ViewFinder : View {
+internal class ViewFinder : View {
 
     companion object {
 
