@@ -62,16 +62,13 @@ class CodeScanner: RelativeLayout {
             }
         }
 
-    private var lastText = ""
-
     private val callback = object: BarcodeCallback {
         override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
         override fun barcodeResult(result: BarcodeResult) {
-            if (result.text == null || result.text == lastText) {
+            if (result.text == null) {
                 return
             }
-            lastText = result.text
-            onScanResult(lastText)
+            onScanResult(result.text)
         }
     }
 
