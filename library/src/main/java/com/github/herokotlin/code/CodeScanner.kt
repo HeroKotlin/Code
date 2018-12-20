@@ -24,6 +24,8 @@ class CodeScanner: RelativeLayout {
 
     lateinit var onScanResult: (String) -> Unit
 
+    var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
+
     var guideTitle = ""
 
         set(value) {
@@ -34,7 +36,7 @@ class CodeScanner: RelativeLayout {
             guideView.text = value
         }
 
-    private var torchOn = false
+    private var isTorchOn = false
 
         set(value) {
 
@@ -43,8 +45,9 @@ class CodeScanner: RelativeLayout {
             }
             field = value
 
-            barcodeView.setTorch(torchOn)
-            if (torchOn) {
+            barcodeView.setTorch(isTorchOn)
+
+            if (isTorchOn) {
                 torchButton.setImageResource(R.drawable.code_scanner_torch_off)
             }
             else {
@@ -75,6 +78,7 @@ class CodeScanner: RelativeLayout {
     private val callback = object: BarcodeCallback {
         override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
         override fun barcodeResult(result: BarcodeResult) {
+            Log.d("codescanner", "${result.text}")
             if (result.text == null) {
                 return
             }
@@ -120,30 +124,29 @@ class CodeScanner: RelativeLayout {
 
         LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
 
-        val formats = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
-        barcodeView.decoderFactory = DefaultDecoderFactory(formats)
+        barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
         barcodeView.decodeContinuous(callback)
 
         barcodeView.resume()
 
         torchButton.setOnClickListener {
-            torchOn = !torchOn
+            isTorchOn = !isTorchOn
         }
 
         barcodeView.addStateListener(object: CameraPreview.StateListener {
             override fun cameraClosed() {
-                torchOn = false
+                isTorchOn = false
                 isPreviewing = false
             }
 
             override fun cameraError(error: Exception?) {
-                torchOn = false
+                isTorchOn = false
                 isPreviewing = false
                 Log.e("CodeScanner", error.toString())
             }
 
             override fun previewStopped() {
-                torchOn = false
+                isTorchOn = false
                 isPreviewing = false
             }
 
