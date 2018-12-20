@@ -28,7 +28,7 @@ class CodeScanner: RelativeLayout {
 
     }
 
-    var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
+    private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
 
     private var isTorchOn = false
 
