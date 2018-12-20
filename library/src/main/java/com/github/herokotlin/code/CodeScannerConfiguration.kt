@@ -5,7 +5,7 @@ import android.content.Context
 abstract class CodeScannerConfiguration(val context: Context) {
 
     /**
-     * 保存录音文件的目录
+     * 扫描框底部的文字
      */
     var guideLabelTitle = "扫描"
 
