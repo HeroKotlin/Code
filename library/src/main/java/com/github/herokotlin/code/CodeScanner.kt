@@ -24,7 +24,7 @@ class CodeScanner: RelativeLayout {
 
     companion object {
 
-        const val PERMISSION_REQUEST_CODE = 19765421
+        const val PERMISSION_REQUEST_CODE = 19765
 
     }
 

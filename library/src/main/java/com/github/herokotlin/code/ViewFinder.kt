@@ -120,7 +120,6 @@ internal class ViewFinder : View {
             canvas.clipRect(box, Region.Op.DIFFERENCE)
         }
 
-
         // 在镂空的矩形上画图
         canvas.drawRect(viewRect, paint)
 
