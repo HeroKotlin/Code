@@ -2,6 +2,7 @@ package com.github.herokotlin.code
 
 import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -99,6 +100,10 @@ internal class ViewFinder : View {
 
         super.onDraw(canvas)
 
+        if (box.width() == 0f || box.height() == 0f) {
+            return
+        }
+
         // save 和 restore 相当于一组操作
         canvas.save()
 
@@ -106,9 +111,15 @@ internal class ViewFinder : View {
         paint.style = Paint.Style.FILL
         paint.color = maskColor
 
-        // 两次调用 clipRect 实现一个镂空的矩形
-        canvas.clipRect(viewRect)
-        canvas.clipRect(box, Region.Op.DIFFERENCE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            canvas.clipOutRect(box)
+        }
+        else {
+            // 两次调用 clipRect 实现一个镂空的矩形
+            canvas.clipRect(viewRect)
+            canvas.clipRect(box, Region.Op.DIFFERENCE)
+        }
+
 
         // 在镂空的矩形上画图
         canvas.drawRect(viewRect, paint)

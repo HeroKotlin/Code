@@ -4,5 +4,5 @@
     <color name="code_scanner_view_finder_mask_color">#99000000</color>
     <color name="code_scanner_view_finder_corner_color">#FF7A07</color>
     <color name="code_scanner_laser_color">#AAFF7A07</color>
-    <color name="code_scanner_guide_text_color">#77FFFFFF</color>
+    <color name="code_scanner_guide_label_text_color">#77FFFFFF</color>
 </resources>

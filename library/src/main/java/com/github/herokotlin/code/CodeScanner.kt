@@ -4,9 +4,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -22,19 +22,13 @@ import java.lang.Exception
 
 class CodeScanner: RelativeLayout {
 
-    lateinit var onScanResult: (String) -> Unit
+    companion object {
+
+        const val PERMISSION_REQUEST_CODE = 19765421
+
+    }
 
     var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
-
-    var guideTitle = ""
-
-        set(value) {
-            if (field == value) {
-                return
-            }
-            field = value
-            guideView.text = value
-        }
 
     private var isTorchOn = false
 
@@ -64,27 +58,21 @@ class CodeScanner: RelativeLayout {
             }
             field = value
             if (value) {
+                guideLabel.visibility = View.VISIBLE
                 torchButton.visibility = View.VISIBLE
                 laserView.visibility = View.VISIBLE
                 startLaser()
             }
             else {
+                guideLabel.visibility = View.GONE
                 torchButton.visibility = View.GONE
                 laserView.visibility = View.GONE
                 stopLaser()
             }
         }
 
-    private val callback = object: BarcodeCallback {
-        override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
-        override fun barcodeResult(result: BarcodeResult) {
-            Log.d("codescanner", "${result.text}")
-            if (result.text == null) {
-                return
-            }
-            onScanResult(result.text)
-        }
-    }
+    private lateinit var configuration: CodeScannerConfiguration
+    private lateinit var callback: CodeScannerCallback
 
     private var laserAnimator: Animator? = null
 
@@ -96,8 +84,8 @@ class CodeScanner: RelativeLayout {
         resources.getDimensionPixelSize(R.dimen.code_scanner_laser_height)
     }
 
-    private val guideMarginTop: Int by lazy {
-        resources.getDimensionPixelSize(R.dimen.code_scanner_guide_margin_top)
+    private val guideLabelMarginTop: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.code_scanner_guide_label_margin_top)
     }
 
     private val torchMarginBottom: Int by lazy {
@@ -120,14 +108,31 @@ class CodeScanner: RelativeLayout {
         init()
     }
 
-    private fun init() {
+    fun init(configuration: CodeScannerConfiguration, callback: CodeScannerCallback) {
 
-        LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
+        this.configuration = configuration
+        this.callback = callback
+
+        guideLabel.text = configuration.guideLabelTitle
 
         barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
-        barcodeView.decodeContinuous(callback)
 
-        barcodeView.resume()
+        barcodeView.decodeContinuous(object: BarcodeCallback {
+            override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
+            override fun barcodeResult(result: BarcodeResult) {
+                if (result.text == null) {
+                    return
+                }
+                callback.onScanSuccess(result.text)
+            }
+        })
+
+        if (requestPermissions()) {
+            barcodeView.resume()
+        }
+        else {
+            callback.onScanWithoutPermissions()
+        }
 
         torchButton.setOnClickListener {
             isTorchOn = !isTorchOn
@@ -142,7 +147,7 @@ class CodeScanner: RelativeLayout {
             override fun cameraError(error: Exception?) {
                 isTorchOn = false
                 isPreviewing = false
-                Log.e("CodeScanner", error.toString())
+                callback.onScanWithoutPermissions()
             }
 
             override fun previewStopped() {
@@ -166,7 +171,7 @@ class CodeScanner: RelativeLayout {
                     viewFinder.box = RectF(left, top, right, bottom)
                     viewFinder.invalidate()
 
-                    guideView.y = bottom + guideMarginTop
+                    guideLabel.y = bottom + guideLabelMarginTop
 
                     torchButton.y = top - torchMarginBottom - torchButtonHeight
 
@@ -177,6 +182,10 @@ class CodeScanner: RelativeLayout {
             }
         })
 
+    }
+
+    private fun init() {
+        LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
     }
 
     private fun startLaser() {
@@ -222,6 +231,39 @@ class CodeScanner: RelativeLayout {
      */
     fun pause() {
         barcodeView.pause()
+    }
+
+    /**
+     * 判断是否有权限，如没有，发起授权请求
+     */
+    fun requestPermissions(): Boolean {
+        return configuration.requestPermissions(
+            listOf(
+                android.Manifest.permission.CAMERA
+            ),
+            PERMISSION_REQUEST_CODE
+        )
+    }
+
+    /**
+     * 如果触发了用户授权，则必须在 Activity 级别实现 onRequestPermissionsResult 接口，并调此方法完成授权
+     */
+    fun requestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+
+        if (requestCode != PERMISSION_REQUEST_CODE) {
+            return
+        }
+
+        for (i in 0 until permissions.size) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                callback.onPermissionsDenied()
+                return
+            }
+        }
+
+        callback.onPermissionsGranted()
+        barcodeView.resume()
+
     }
 
 }

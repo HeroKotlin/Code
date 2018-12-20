@@ -13,6 +13,7 @@
             android:id="@+id/laserView"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/code_scanner_laser_height"
+            android:visibility="gone"
             android:background="@color/code_scanner_laser_color"/>
 
     <com.github.herokotlin.code.ViewFinder
@@ -27,12 +28,13 @@
             app:view_finder_corner_width="@dimen/code_scanner_view_finder_corner_width"/>
 
     <TextView
-            android:id="@+id/guideView"
+            android:id="@+id/guideLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:textSize="@dimen/code_scanner_guide_text_size"
-            android:textColor="@color/code_scanner_guide_text_color"/>
+            android:visibility="gone"
+            android:textSize="@dimen/code_scanner_guide_label_text_size"
+            android:textColor="@color/code_scanner_guide_label_text_color"/>
 
     <ImageView
             android:id="@+id/torchButton"
@@ -40,6 +42,7 @@
             android:layout_height="@dimen/code_scanner_torch_button_height"
             android:layout_centerHorizontal="true"
             android:scaleType="centerInside"
+            android:visibility="gone"
             android:src="@drawable/code_scanner_torch_on"/>
 
 </RelativeLayout>
