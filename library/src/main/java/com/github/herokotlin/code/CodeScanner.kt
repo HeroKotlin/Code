@@ -24,7 +24,17 @@ class CodeScanner: RelativeLayout {
 
     lateinit var onScanResult: (String) -> Unit
 
-    var torchOn = false
+    var guideTitle = ""
+
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            guideView.text = value
+        }
+
+    private var torchOn = false
 
         set(value) {
 
@@ -43,7 +53,7 @@ class CodeScanner: RelativeLayout {
 
         }
 
-    var isPreviewing = false
+    private var isPreviewing = false
 
         set(value) {
             if (field == value) {
@@ -209,15 +219,6 @@ class CodeScanner: RelativeLayout {
      */
     fun pause() {
         barcodeView.pause()
-    }
-
-    /**
-     * Pause scanning and preview; waiting for the Camera to be closed.
-     *
-     * This blocks the main thread.
-     */
-    fun pauseAndWait() {
-        barcodeView.pauseAndWait()
     }
 
 }

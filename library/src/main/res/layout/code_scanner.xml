@@ -31,7 +31,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/code_scanner_guide_title"
             android:textSize="@dimen/code_scanner_guide_text_size"
             android:textColor="@color/code_scanner_guide_text_color"/>
 
