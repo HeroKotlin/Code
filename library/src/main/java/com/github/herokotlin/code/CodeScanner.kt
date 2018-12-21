@@ -20,7 +20,7 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import kotlinx.android.synthetic.main.code_scanner.view.*
 import java.lang.Exception
 
-class CodeScanner: RelativeLayout {
+open class CodeScanner: RelativeLayout {
 
     companion object {
 
