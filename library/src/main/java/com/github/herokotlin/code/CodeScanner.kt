@@ -86,6 +86,16 @@ class CodeScanner: RelativeLayout {
 
     private var laserAnimator: Animator? = null
 
+    private var barcodeCallback = object: BarcodeCallback {
+        override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
+        override fun barcodeResult(result: BarcodeResult) {
+            if (result.text == null) {
+                return
+            }
+            callback.onScanSuccess(result.text)
+        }
+    }
+
     private val laserGap: Int by lazy {
         resources.getDimensionPixelSize(R.dimen.code_scanner_laser_gap)
     }
@@ -125,16 +135,6 @@ class CodeScanner: RelativeLayout {
 
         barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
 
-        barcodeView.decodeContinuous(object: BarcodeCallback {
-            override fun possibleResultPoints(resultPoints: List<ResultPoint>) {}
-            override fun barcodeResult(result: BarcodeResult) {
-                if (result.text == null) {
-                    return
-                }
-                callback.onScanSuccess(result.text)
-            }
-        })
-
         torchButton.setOnClickListener {
             isTorchOn = !isTorchOn
         }
@@ -164,6 +164,9 @@ class CodeScanner: RelativeLayout {
                 val rect = barcodeView.framingRect
                 if (rect != null) {
 
+                    // 兼容某些手机不走正常流程
+                    isPreviewing = true
+
                     val left = rect.left.toFloat()
                     val top = rect.top.toFloat()
                     val right = rect.right.toFloat()
@@ -187,7 +190,13 @@ class CodeScanner: RelativeLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        barcodeView.decodeContinuous(barcodeCallback)
         requestPermissions()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        barcodeView.stopDecoding()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
