@@ -28,6 +28,16 @@ class CodeScanner: RelativeLayout {
 
     }
 
+    var guideTitle = ""
+
+        set(value) {
+            if (field == value) {
+                return
+            }
+            field = value
+            guideLabel.text = value
+        }
+
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
 
     private var isTorchOn = false
@@ -113,8 +123,6 @@ class CodeScanner: RelativeLayout {
         this.configuration = configuration
         this.callback = callback
 
-        guideLabel.text = configuration.guideLabelTitle
-
         barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
 
         barcodeView.decodeContinuous(object: BarcodeCallback {
@@ -126,13 +134,6 @@ class CodeScanner: RelativeLayout {
                 callback.onScanSuccess(result.text)
             }
         })
-
-        if (requestPermissions()) {
-            barcodeView.resume()
-        }
-        else {
-            callback.onScanWithoutPermissions()
-        }
 
         torchButton.setOnClickListener {
             isTorchOn = !isTorchOn
@@ -178,10 +179,17 @@ class CodeScanner: RelativeLayout {
                     laserView.layoutParams.width = (right - left - 2 * laserGap).toInt()
                     laserView.x = left + laserGap
 
+                    callback.onPreviewSizeChange()
+
                 }
             }
         })
 
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        requestPermissions()
     }
 
     private fun init() {
@@ -215,13 +223,31 @@ class CodeScanner: RelativeLayout {
     }
 
     /**
+     * 判断是否有权限，如没有，发起授权请求
+     */
+    private fun requestPermissions() {
+        val hasPermissions = configuration.requestPermissions(
+            listOf(
+                android.Manifest.permission.CAMERA
+            ),
+            PERMISSION_REQUEST_CODE
+        )
+        if (hasPermissions) {
+            barcodeView.resume()
+        }
+        else {
+            callback.onScanWithoutPermissions()
+        }
+    }
+
+    /**
      * Start the camera preview and decoding. Typically this should be called from the Activity's
      * onResume() method.
      *
      * Call from UI thread only.
      */
     fun resume() {
-        barcodeView.resume()
+        requestPermissions()
     }
 
     /**
@@ -231,18 +257,6 @@ class CodeScanner: RelativeLayout {
      */
     fun pause() {
         barcodeView.pause()
-    }
-
-    /**
-     * 判断是否有权限，如没有，发起授权请求
-     */
-    fun requestPermissions(): Boolean {
-        return configuration.requestPermissions(
-            listOf(
-                android.Manifest.permission.CAMERA
-            ),
-            PERMISSION_REQUEST_CODE
-        )
     }
 
     /**

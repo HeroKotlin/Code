@@ -22,4 +22,8 @@ interface CodeScannerCallback {
 
     }
 
+    fun onPreviewSizeChange() {
+
+    }
+
 }
