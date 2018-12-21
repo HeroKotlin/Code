@@ -26,4 +26,8 @@ interface CodeScannerCallback {
 
     }
 
+    fun onPreviewingChange(isPreviewing: Boolean) {
+
+    }
+
 }
