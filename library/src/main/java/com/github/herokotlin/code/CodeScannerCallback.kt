@@ -2,13 +2,13 @@ package com.github.herokotlin.code
 
 interface CodeScannerCallback {
 
-    // 扫描时，发现没权限
-    fun onScanWithoutPermissions() {
+    // 识别成功
+    fun onScanSuccess(code: String) {
 
     }
 
-    // 识别成功
-    fun onScanSuccess(code: String) {
+    // 扫描时，发现没权限
+    fun onScanWithoutPermissions() {
 
     }
 
@@ -22,7 +22,7 @@ interface CodeScannerCallback {
 
     }
 
-    fun onPreviewSizeChange() {
+    fun onSizeChange() {
 
     }
 

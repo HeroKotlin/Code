@@ -179,8 +179,6 @@ class CodeScanner: RelativeLayout {
                     laserView.layoutParams.width = (right - left - 2 * laserGap).toInt()
                     laserView.x = left + laserGap
 
-                    callback.onPreviewSizeChange()
-
                 }
             }
         })
@@ -190,6 +188,11 @@ class CodeScanner: RelativeLayout {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         requestPermissions()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        callback.onSizeChange()
     }
 
     private fun init() {
