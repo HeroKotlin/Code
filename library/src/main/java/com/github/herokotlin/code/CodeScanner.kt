@@ -248,6 +248,7 @@ open class CodeScanner: RelativeLayout {
     }
 
     fun stop() {
+        barcodeView.pause()
         barcodeView.stopDecoding()
     }
 
