@@ -22,12 +22,4 @@ interface CodeScannerCallback {
 
     }
 
-    fun onSizeChange() {
-
-    }
-
-    fun onPreviewingChange(isPreviewing: Boolean) {
-
-    }
-
 }

@@ -79,7 +79,6 @@ open class CodeScanner: RelativeLayout {
                 laserView.visibility = View.GONE
                 stopLaser()
             }
-            callback.onPreviewingChange(value)
         }
 
     private lateinit var configuration: CodeScannerConfiguration
@@ -187,11 +186,6 @@ open class CodeScanner: RelativeLayout {
             }
         })
 
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        callback.onSizeChange()
     }
 
     private fun init() {
