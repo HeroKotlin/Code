@@ -1,8 +1,6 @@
 package com.github.herokotlin.code
 
-import android.content.Context
-
-abstract class CodeScannerConfiguration(val context: Context) {
+abstract class CodeScannerConfiguration {
 
     /**
      * 请求权限
