@@ -185,6 +185,9 @@ open class CodeScanner: RelativeLayout {
             }
         })
 
+        permission.onRequestPermissions = { activity, permissions, requestCode ->
+            callback.onRequestPermissions(activity, permissions, requestCode)
+        }
         permission.onPermissionsNotGranted = {
             callback.onPermissionsNotGranted()
         }
