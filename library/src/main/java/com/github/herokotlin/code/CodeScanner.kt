@@ -24,6 +24,9 @@ import java.lang.Exception
 
 open class CodeScanner: RelativeLayout {
 
+    // 用于请求权限
+    var activity: Activity? = null
+
     var guideTitle = ""
 
         set(value) {
@@ -220,11 +223,16 @@ open class CodeScanner: RelativeLayout {
         laserAnimator = null
     }
 
-    fun start() {
-        barcodeView.decodeContinuous(barcodeCallback)
-        permission.requestPermissions(context as Activity) {
+    private fun requestPermissions() {
+        val context = activity ?: (context as Activity)
+        permission.requestPermissions(context) {
             barcodeView.resume()
         }
+    }
+
+    fun start() {
+        barcodeView.decodeContinuous(barcodeCallback)
+        requestPermissions()
     }
 
     fun stop() {
@@ -239,9 +247,7 @@ open class CodeScanner: RelativeLayout {
      * Call from UI thread only.
      */
     fun resume() {
-        permission.requestPermissions(context as Activity) {
-            barcodeView.resume()
-        }
+        requestPermissions()
     }
 
     /**
