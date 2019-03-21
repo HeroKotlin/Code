@@ -1,16 +1,18 @@
 package com.github.herokotlin.code
 
+import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
+import com.github.herokotlin.permission.Permission
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -22,12 +24,6 @@ import java.lang.Exception
 
 open class CodeScanner: RelativeLayout {
 
-    companion object {
-
-        const val PERMISSION_REQUEST_CODE = 19765
-
-    }
-
     var guideTitle = ""
 
         set(value) {
@@ -37,6 +33,10 @@ open class CodeScanner: RelativeLayout {
             field = value
             guideLabel.text = value
         }
+
+    lateinit var callback: CodeScannerCallback
+
+    private val permission = Permission(89190904, listOf(Manifest.permission.CAMERA))
 
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
 
@@ -80,9 +80,6 @@ open class CodeScanner: RelativeLayout {
                 stopLaser()
             }
         }
-
-    private lateinit var configuration: CodeScannerConfiguration
-    private lateinit var callback: CodeScannerCallback
 
     private var laserAnimator: Animator? = null
 
@@ -128,10 +125,9 @@ open class CodeScanner: RelativeLayout {
         init()
     }
 
-    fun init(configuration: CodeScannerConfiguration, callback: CodeScannerCallback) {
+    private fun init() {
 
-        this.configuration = configuration
-        this.callback = callback
+        LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
 
         barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
 
@@ -148,7 +144,7 @@ open class CodeScanner: RelativeLayout {
             override fun cameraError(error: Exception?) {
                 isTorchOn = false
                 isPreviewing = false
-                callback.onScanWithoutPermissions()
+                callback.onPermissionsNotGranted()
             }
 
             override fun previewStopped() {
@@ -186,10 +182,16 @@ open class CodeScanner: RelativeLayout {
             }
         })
 
-    }
+        permission.onPermissionsNotGranted = {
+            callback.onPermissionsNotGranted()
+        }
+        permission.onPermissionsGranted = {
+            callback.onPermissionsGranted()
+        }
+        permission.onPermissionsDenied = {
+            callback.onPermissionsDenied()
+        }
 
-    private fun init() {
-        LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
     }
 
     private fun startLaser() {
@@ -218,27 +220,11 @@ open class CodeScanner: RelativeLayout {
         laserAnimator = null
     }
 
-    /**
-     * 判断是否有权限，如没有，发起授权请求
-     */
-    private fun requestPermissions() {
-        val hasPermissions = configuration.requestPermissions(
-            listOf(
-                android.Manifest.permission.CAMERA
-            ),
-            PERMISSION_REQUEST_CODE
-        )
-        if (hasPermissions) {
-            barcodeView.resume()
-        }
-        else {
-            callback.onScanWithoutPermissions()
-        }
-    }
-
     fun start() {
         barcodeView.decodeContinuous(barcodeCallback)
-        requestPermissions()
+        permission.requestPermissions(context as Activity) {
+            barcodeView.resume()
+        }
     }
 
     fun stop() {
@@ -253,7 +239,9 @@ open class CodeScanner: RelativeLayout {
      * Call from UI thread only.
      */
     fun resume() {
-        requestPermissions()
+        permission.requestPermissions(context as Activity) {
+            barcodeView.resume()
+        }
     }
 
     /**
@@ -265,25 +253,8 @@ open class CodeScanner: RelativeLayout {
         barcodeView.pause()
     }
 
-    /**
-     * 如果触发了用户授权，则必须在 Activity 级别实现 onRequestPermissionsResult 接口，并调此方法完成授权
-     */
-    fun requestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-
-        if (requestCode != PERMISSION_REQUEST_CODE) {
-            return
-        }
-
-        for (i in 0 until permissions.size) {
-            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                callback.onPermissionsDenied()
-                return
-            }
-        }
-
-        callback.onPermissionsGranted()
-        barcodeView.resume()
-
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        permission.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
 }

@@ -7,18 +7,15 @@ interface CodeScannerCallback {
 
     }
 
-    // 扫描时，发现没权限
-    fun onScanWithoutPermissions() {
-
-    }
-
-    // 用户点击同意授权
     fun onPermissionsGranted() {
 
     }
 
-    // 用户点击拒绝授权
     fun onPermissionsDenied() {
+
+    }
+
+    fun onPermissionsNotGranted() {
 
     }
 
