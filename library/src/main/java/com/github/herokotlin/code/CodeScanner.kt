@@ -39,7 +39,7 @@ open class CodeScanner: RelativeLayout {
 
     lateinit var callback: CodeScannerCallback
 
-    private val permission = Permission(89190904, listOf(Manifest.permission.CAMERA))
+    private val permission = Permission(190904, listOf(Manifest.permission.CAMERA))
 
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
 
