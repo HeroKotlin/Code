@@ -1,7 +1,7 @@
 package com.github.herokotlin.code
 
 import android.app.Activity
-import android.support.v4.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 
 interface CodeScannerCallback {
 
