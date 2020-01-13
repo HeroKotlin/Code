@@ -22,18 +22,6 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import kotlinx.android.synthetic.main.code_scanner.view.*
 import java.lang.Exception
 
-enum class PermissionStatus {
-
-    UNKNOWN,
-
-    GRANTED,
-
-    NOT_GRANTED,
-
-    DENIED
-
-}
-
 open class CodeScanner: RelativeLayout {
 
     // 用于请求权限
@@ -55,7 +43,7 @@ open class CodeScanner: RelativeLayout {
 
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
 
-    private var permissionStatus = PermissionStatus.UNKNOWN
+    private var hasPermission = false
 
     private var isTorchOn = false
 
@@ -203,15 +191,13 @@ open class CodeScanner: RelativeLayout {
             callback.onRequestPermissions(activity, permissions, requestCode)
         }
         permission.onPermissionsNotGranted = {
-            permissionStatus = PermissionStatus.NOT_GRANTED
             callback.onPermissionsNotGranted()
         }
         permission.onPermissionsGranted = {
-            permissionStatus = PermissionStatus.GRANTED
+            hasPermission = true
             callback.onPermissionsGranted()
         }
         permission.onPermissionsDenied = {
-            permissionStatus = PermissionStatus.DENIED
             callback.onPermissionsDenied()
         }
 
@@ -267,8 +253,10 @@ open class CodeScanner: RelativeLayout {
      * Call from UI thread only.
      */
     fun resume() {
-        // 如果明确拒绝了，则 resume 时不用再请求权限了
-        if (permissionStatus != PermissionStatus.DENIED) {
+        // 未知、没权限、拒绝权限三种情况下，resume 都不用再次发起请求
+        // 因为安卓权限请求弹窗消失后，会立即触发 resume，而后才知道是哪种权限状态（即存在顺序问题）
+        // 这就会导致再次调用 requestPermissions() 时，和第一次调用 requestPermissions() 时相同的状态
+        if (hasPermission) {
             requestPermissions()
         }
     }
