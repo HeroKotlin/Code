@@ -22,6 +22,18 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import kotlinx.android.synthetic.main.code_scanner.view.*
 import java.lang.Exception
 
+enum class PermissionStatus {
+
+    UNKNOWN,
+
+    GRANTED,
+
+    NOT_GRANTED,
+
+    DENIED
+
+}
+
 open class CodeScanner: RelativeLayout {
 
     // 用于请求权限
@@ -42,6 +54,8 @@ open class CodeScanner: RelativeLayout {
     private val permission = Permission(19904, listOf(Manifest.permission.CAMERA))
 
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
+
+    private var permissionStatus = PermissionStatus.UNKNOWN
 
     private var isTorchOn = false
 
@@ -189,12 +203,15 @@ open class CodeScanner: RelativeLayout {
             callback.onRequestPermissions(activity, permissions, requestCode)
         }
         permission.onPermissionsNotGranted = {
+            permissionStatus = PermissionStatus.NOT_GRANTED
             callback.onPermissionsNotGranted()
         }
         permission.onPermissionsGranted = {
+            permissionStatus = PermissionStatus.GRANTED
             callback.onPermissionsGranted()
         }
         permission.onPermissionsDenied = {
+            permissionStatus = PermissionStatus.DENIED
             callback.onPermissionsDenied()
         }
 
@@ -250,7 +267,10 @@ open class CodeScanner: RelativeLayout {
      * Call from UI thread only.
      */
     fun resume() {
-        requestPermissions()
+        // 如果明确拒绝了，则 resume 时不用再请求权限了
+        if (permissionStatus != PermissionStatus.DENIED) {
+            requestPermissions()
+        }
     }
 
     /**
