@@ -12,6 +12,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
+import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CameraPreview
@@ -124,7 +125,7 @@ open class CodeScanner: RelativeLayout {
 
         LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
 
-        barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType)
+        barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType, null, null, Intents.Scan.MIXED_SCAN)
 
         torchButton.setOnClickListener {
             isTorchOn = !isTorchOn
