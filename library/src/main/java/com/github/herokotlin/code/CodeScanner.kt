@@ -34,7 +34,7 @@ open class CodeScanner: RelativeLayout {
 
     lateinit var callback: CodeScannerCallback
 
-    private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128)
+    private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_39, BarcodeFormat.CODE_93, BarcodeFormat.CODE_128, BarcodeFormat.EAN_8, BarcodeFormat.EAN_13)
 
     private var isTorchOn = false
 
