@@ -180,7 +180,7 @@ open class CodeScanner: RelativeLayout {
 
     }
 
-    fun destroy() {
+    open fun destroy() {
         stop()
         isPreviewing = false
     }
