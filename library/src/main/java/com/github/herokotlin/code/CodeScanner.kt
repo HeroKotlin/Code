@@ -180,6 +180,11 @@ open class CodeScanner: RelativeLayout {
 
     }
 
+    fun destroy() {
+        stop()
+        isPreviewing = false
+    }
+
     private fun startLaser() {
 
         val animator = ValueAnimator.ofFloat(viewFinder.box.top, viewFinder.box.bottom - laserHeight)
