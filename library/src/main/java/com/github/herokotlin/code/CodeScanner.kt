@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.RelativeLayout
+import com.github.herokotlin.code.databinding.CodeScannerBinding
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.Intents
@@ -17,7 +18,6 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CameraPreview
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
-import kotlinx.android.synthetic.main.code_scanner.view.*
 import java.lang.Exception
 
 open class CodeScanner: RelativeLayout {
@@ -29,10 +29,12 @@ open class CodeScanner: RelativeLayout {
                 return
             }
             field = value
-            guideLabel.text = value
+            binding.guideLabel.text = value
         }
 
     lateinit var callback: CodeScannerCallback
+
+    private lateinit var binding: CodeScannerBinding
 
     private var supportedCodeType = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_39, BarcodeFormat.CODE_93,
         BarcodeFormat.CODE_128, BarcodeFormat.EAN_8, BarcodeFormat.EAN_13, BarcodeFormat.UPC_E)
@@ -46,13 +48,13 @@ open class CodeScanner: RelativeLayout {
             }
             field = value
 
-            barcodeView.setTorch(isTorchOn)
+            binding.barcodeView.setTorch(isTorchOn)
 
             if (isTorchOn) {
-                torchButton.setImageResource(R.drawable.code_scanner_torch_off)
+                binding.torchButton.setImageResource(R.drawable.code_scanner_torch_off)
             }
             else {
-                torchButton.setImageResource(R.drawable.code_scanner_torch_on)
+                binding.torchButton.setImageResource(R.drawable.code_scanner_torch_on)
             }
 
         }
@@ -65,15 +67,15 @@ open class CodeScanner: RelativeLayout {
             }
             field = value
             if (value) {
-                guideLabel.visibility = View.VISIBLE
-                torchButton.visibility = View.VISIBLE
-                laserView.visibility = View.VISIBLE
+                binding.guideLabel.visibility = View.VISIBLE
+                binding.torchButton.visibility = View.VISIBLE
+                binding.laserView.visibility = View.VISIBLE
                 startLaser()
             }
             else {
-                guideLabel.visibility = View.GONE
-                torchButton.visibility = View.GONE
-                laserView.visibility = View.GONE
+                binding.guideLabel.visibility = View.GONE
+                binding.torchButton.visibility = View.GONE
+                binding.laserView.visibility = View.GONE
                 stopLaser()
             }
         }
@@ -124,15 +126,15 @@ open class CodeScanner: RelativeLayout {
 
     private fun init() {
 
-        LayoutInflater.from(context).inflate(R.layout.code_scanner, this)
+        binding = CodeScannerBinding.inflate(LayoutInflater.from(context), this, true)
 
-        barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType, null, null, Intents.Scan.MIXED_SCAN)
+        binding.barcodeView.decoderFactory = DefaultDecoderFactory(supportedCodeType, null, null, Intents.Scan.MIXED_SCAN)
 
-        torchButton.setOnClickListener {
+        binding.torchButton.setOnClickListener {
             isTorchOn = !isTorchOn
         }
 
-        barcodeView.addStateListener(object: CameraPreview.StateListener {
+        binding.barcodeView.addStateListener(object: CameraPreview.StateListener {
             override fun cameraClosed() {
                 isTorchOn = false
                 isPreviewing = false
@@ -153,7 +155,7 @@ open class CodeScanner: RelativeLayout {
             }
 
             override fun previewSized() {
-                val rect = barcodeView.framingRect
+                val rect = binding.barcodeView.framingRect
                 if (rect != null) {
 
                     // 兼容某些手机不走正常流程
@@ -164,15 +166,15 @@ open class CodeScanner: RelativeLayout {
                     val right = rect.right.toFloat()
                     val bottom = rect.bottom.toFloat()
 
-                    viewFinder.box = RectF(left, top, right, bottom)
-                    viewFinder.invalidate()
+                    binding.viewFinder.box = RectF(left, top, right, bottom)
+                    binding.viewFinder.invalidate()
 
-                    guideLabel.y = bottom + guideLabelMarginTop
+                    binding.guideLabel.y = bottom + guideLabelMarginTop
 
-                    torchButton.y = top - torchMarginBottom - torchButtonHeight
+                    binding.torchButton.y = top - torchMarginBottom - torchButtonHeight
 
-                    laserView.layoutParams.width = (right - left - 2 * laserGap).toInt()
-                    laserView.x = left + laserGap
+                    binding.laserView.layoutParams.width = (right - left - 2 * laserGap).toInt()
+                    binding.laserView.x = left + laserGap
 
                 }
             }
@@ -187,15 +189,15 @@ open class CodeScanner: RelativeLayout {
 
     private fun startLaser() {
 
-        val animator = ValueAnimator.ofFloat(viewFinder.box.top, viewFinder.box.bottom - laserHeight)
+        val animator = ValueAnimator.ofFloat(binding.viewFinder.box.top, binding.viewFinder.box.bottom - laserHeight)
         animator.duration = 3000
         animator.interpolator = LinearInterpolator()
         animator.addUpdateListener {
-            laserView.y = it.animatedValue as Float
+            binding.laserView.y = it.animatedValue as Float
         }
         animator.addListener(object: AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                if (laserView.visibility == View.VISIBLE) {
+            override fun onAnimationEnd(animation: Animator) {
+                if (binding.laserView.visibility == View.VISIBLE) {
                     startLaser()
                 }
             }
@@ -212,13 +214,13 @@ open class CodeScanner: RelativeLayout {
     }
 
     fun start() {
-        barcodeView.decodeContinuous(barcodeCallback)
-        barcodeView.resume()
+        binding.barcodeView.decodeContinuous(barcodeCallback)
+        binding.barcodeView.resume()
     }
 
     fun stop() {
-        barcodeView.pause()
-        barcodeView.stopDecoding()
+        binding.barcodeView.pause()
+        binding. barcodeView.stopDecoding()
     }
 
     /**
@@ -228,7 +230,7 @@ open class CodeScanner: RelativeLayout {
      * Call from UI thread only.
      */
     fun resume() {
-        barcodeView.resume()
+        binding.barcodeView.resume()
     }
 
     /**
@@ -237,7 +239,7 @@ open class CodeScanner: RelativeLayout {
      * Call from the Activity's onPause() method.
      */
     fun pause() {
-        barcodeView.pause()
+        binding.barcodeView.pause()
     }
 
 }

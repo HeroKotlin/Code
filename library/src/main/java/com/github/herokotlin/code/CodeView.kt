@@ -41,12 +41,19 @@ open class CodeView: ImageView {
     private fun init() {
         hints[EncodeHintType.MARGIN] = 0
         hints[EncodeHintType.CHARACTER_SET] = "utf-8"
-        hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.H
+        hints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.Q
     }
 
     private fun updateCode() {
-        val bitmap = barcodeEncoder.encodeBitmap(text, codeType, width, height, hints)
-        setImageBitmap(bitmap)
+        if (text.isEmpty()) {
+            return
+        }
+        try {
+            val bitmap = barcodeEncoder.encodeBitmap(text, codeType, width, height, hints)
+            setImageBitmap(bitmap)
+        } catch (_: Exception) {
+
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
